@@ -24,22 +24,26 @@
                     <td>{{ $post -> title }}</td>
                     <td>{{ $post -> author }}</td>
                     <td>{{ $post -> creator->name }}</td>
-                    <td>
-                        <button onclick="location.href='{{ route('post.edit', $post -> id) }}'" type="button" class="btn btn-primary">Edit</button>
-                        @if (empty($post -> category))
-                        <button onclick="location.href="#" type="button" class="btn btn-primary">Reasign Category</button>
-                        @endif
-                    </td>
-                    <td>
-                        <form action="{{ route('post.delete', $post -> id) }}" method="post" id="frm{{ $post -> id }}">
-                            @csrf
-                            @method('delete')
-                            <button href="javascript:void(0)" 
-                            onclick="if(confirm('Are you sure you want to delete this item?')){
-                                document.getElementById('frm{{ $post -> id }}').submit()
-                                }" type="button" class="btn btn-primary">Delete</button>
-                        </form>
-                    </td>
+                    @can('editPost', $post)
+                        <td>
+                            <button onclick="location.href='{{ route('post.edit', $post -> id) }}'" type="button" class="btn btn-primary">Edit</button>
+                            @if (empty($post -> category))
+                            <button onclick="location.href="#" type="button" class="btn btn-primary">Reasign Category</button>
+                            @endif
+                        </td>
+                    @endcan    
+                    @can('deletePost', $post)
+                        <td>
+                            <form action="{{ route('post.delete', $post -> id) }}" method="post" id="frm{{ $post -> id }}">
+                                @csrf
+                                @method('delete')
+                                <button href="javascript:void(0)" 
+                                onclick="if(confirm('Are you sure you want to delete this item?')){
+                                    document.getElementById('frm{{ $post -> id }}').submit()
+                                    }" type="button" class="btn btn-primary">Delete</button>
+                            </form>
+                        </td>
+                    @endcan
                 </tr>
             @endforeach
         </tbody>

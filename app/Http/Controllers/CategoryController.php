@@ -6,6 +6,7 @@ use App\Category;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests\CategoryStoreRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
@@ -22,41 +23,49 @@ class CategoryController extends Controller
 
     public function create()
     {
+        if (!Auth::user()->can('createCategory', Category::class)) {
+            abort(403);
+        }
+
         return view('categories.create');
     }
 
     public function store(CategoryStoreRequest $request)
     {
+        if(!Auth::user()->can('storeCategory')){
+            abort(403);
+        }
+
         $category = Category::create($request->all());
         return redirect(route('categories.index'));
     }
 
-    public function edit($id)
+    public function edit(Category $category)
     {
-        $category = Category::find($id);
-        if(empty($category)){
-            return redirect(route('categories.index'));
+        if(!Auth::user()->can('editCategory', $category)){
+            abort(403);
         }
+
         return view('categories.edit') -> with('category', $category);
     }
 
-    public function update($id, Request $request)
+    public function update(Category $category, Request $request)
     {
-        $category = Category::find($id);
-        if(empty($category)){
-            return redirect(route('categories.index'));
+        if(!Auth::user()->can('updateCategory', $category)){
+            abort(403);
         }
+
         $category -> fill($request -> all());
         $category -> save();
         return redirect(route('categories.index'));
     }
 
-    public function delete($id)
+    public function delete(Category $category)
     {
-        $category = Category::find($id);
-        if(empty($category)){
-            return redirect(route('categories.index'));
+        if(!Auth::user()->can('deleteCategory', $category)){
+            abort(403);
         }
+
         $category -> delete();
         return redirect(route('categories.index'));
     }

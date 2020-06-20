@@ -36,34 +36,33 @@ class PostController extends Controller
         return redirect(route('post.index'));
     }
 
-    public function edit($id)
+    public function edit(Post $post)
     {
-        $categories = Category::all();
-
-        $post = Post::find($id);
-        if(empty($post)){
-            return redirect(route('post.index'));
+        if(!Auth::user()->can('editPost', $post)){
+            abort(403);
         }
+
+        $categories = Category::all();
         return view('post.edit')->with(['post' => $post, 'categories' => $categories]);
     }
 
-    public function update($id, Request $request)
+    public function update(Post $post, Request $request)
     {
-        $post = Post::find($id);
-        if(empty($post)){
-            return redirect(route('post.index'));
+        if(!Auth::user()->can('updatePost', $post)){
+            abort(403);
         }
+
         $post -> fill($request -> all());
         $post -> save();
         return redirect(route('post.index'));
     }
 
-    public function delete($id)
+    public function delete(Post $post)
     {
-        $post = Post::find($id);
-        if(empty($post)){
-            return redirect(route('post.index'));
+        if(!Auth::user()->can('deletePost', $post)){
+            abort(403);
         }
+
         $post -> delete();
         return redirect(route('post.index'));
     }
