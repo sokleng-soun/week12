@@ -32,10 +32,6 @@ class CategoryController extends Controller
 
     public function store(CategoryStoreRequest $request)
     {
-        if(!Auth::user()->can('storeCategory')){
-            abort(403);
-        }
-
         $category = Category::create($request->all());
         return redirect(route('categories.index'));
     }
